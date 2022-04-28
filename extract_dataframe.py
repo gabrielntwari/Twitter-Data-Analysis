@@ -35,7 +35,8 @@ class TweetDfExtractor:
 
     # an example function
     def find_statuses_count(self)->list:
-        statuses_count = [x['user']['statuses_count'] for x in self.tweets_list]
+        
+        statuses_count = [i['user']['statuses_count'] for i in self.tweets_list]
         return statuses_count
         
     def find_full_text(self)->list:
@@ -61,33 +62,40 @@ class TweetDfExtractor:
 
     def find_created_time(self)->list:
 
-        created_at = [x['created_at'] for x in self.tweets_list]
+        created_at = [i['created_at'] for i in self.tweets_list]
 
         return created_at
 
     def find_source(self)->list:
-        source = [x['source'] for x in self.tweets_list]
+        source = [i['source'] for i in self.tweets_list]
 
         return source
 
     def find_screen_name(self)->list:
-        screen_name = [x['user']['screen_name'] for x in self.tweets_list]
+        screen_name = [i['user']['screen_name'] for i in self.tweets_list]
 
         return screen_name
 
     def find_followers_count(self)->list:
-        followers_count = [x['user']['followers_count'] for x in self.tweets_list]
+        followers_count = [i['user']['followers_count'] for i in self.tweets_list]
 
         return followers_count
 
     def find_friends_count(self)->list:
-        friends_count = [x['user']['friends_count'] for x in self.tweets_list]
+        friends_count = [i['user']['friends_count'] for i in self.tweets_list]
 
         return friends_count
 
     def is_sensitive(self)->list:
+        
         try:
-            is_sensitive = [x['possibly_sensitive'] for x in self.tweets_list]
+            is_sensitive=list() 
+            for i in self.tweets_list:
+                if 'possibly_sensitive' in i.keys():
+                    is_sensitive.append(i['possibly_sensitive'])
+                else:
+                    is_sensitive.append(0)
+                
         except KeyError:
             is_sensitive = None
 
@@ -164,13 +172,16 @@ class TweetDfExtractor:
         retweet_count = self.find_retweet_count()
         screen_name = self.find_screen_name()
         follower_count = self.find_followers_count()
-        print(follower_count)
+        
         friends_count = self.find_friends_count()
         sensitivity = self.is_sensitive()
         hashtags = self.find_hashtags()
         mentions = self.find_mentions()
         location = self.find_location()
-        data = zip(created_at, source, text, polarity, subjectivity, lang, fav_count, retweet_count, screen_name, follower_count, friends_count, sensitivity, hashtags, mentions, location)
+        data = {"created_at":created_at,'source':source,'original_text':text,'polarity':polarity,'subjectivity':subjectivity,
+                'lang':lang,'favorite_count':fav_count,'retweet_count':retweet_count,'original_author':screen_name, 
+                'followers_count':follower_count,'friends_count':friends_count,'possibly_sensitive':sensitivity,
+                'hashtags':hashtags,'user_mentions':mentions}
         df = pd.DataFrame(data=data, columns=columns)
 
         if save:
@@ -186,9 +197,13 @@ if __name__ == "__main__":
     'original_author', 'screen_count', 'followers_count','friends_count','possibly_sensitive', 'hashtags', 'user_mentions', 'place', 'place_coord_boundaries']
     _, tweet_list = read_json("data/Economic_Twitter_Data.json")
 
-    i = TweetDfExtractor(tweet_list)
+    tweet = TweetDfExtractor(tweet_list)
     tweet_df = tweet.get_tweet_df() 
     # use all defined functions to generate a dataframe with the specified columns above
     # from the fix_bug branch
 
+<<<<<<< HEAD
+tweet_df
+=======
   
+>>>>>>> 83fc81cd1821cce7e45e41a5f13aff7aa9f79105
